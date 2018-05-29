@@ -102,6 +102,9 @@ describe('Server', () => {
                 request(app)
                     .get(`/todos/${id}`)
                     .expect(400)
+                    .expect((res) => {
+                        expect(res.text).toBe('Invalid id.');
+                    })
                     .end(done);
         });
     });
