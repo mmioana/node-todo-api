@@ -22,6 +22,14 @@ app.post('/todos', (req, res) => {
 
 // GET /todos/:id
 
+app.get('/todos', (req, res) => {
+    Todo.find().then((todos) => {
+        res.send({todos});
+    }, (err) => {
+        res.status(400).send(err);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
 });
