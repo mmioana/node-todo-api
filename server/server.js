@@ -7,6 +7,7 @@ const config = require('./config/config');
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
+const {authenticate} = require('./middleware/authenticate');
 
 let app = express();
 let port = process.env.PORT || 8000;
@@ -114,6 +115,12 @@ app.post('/users', (req, res) => {
         }).catch((err) => {
             res.status(400).send(err);
         });
+});
+
+
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user.toJson());
 });
 
 
