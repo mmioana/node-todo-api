@@ -34,11 +34,11 @@ app.get('/todos', (req, res) => {
 app.get('/todos/:id', (req, res) => {
     let todoId = req.params.id;
     Todo.findById(todoId)
-        .then((doc) => {
-            if (!doc) {
+        .then((todo) => {
+            if (!todo) {
                 res.status(404).send('');
             }
-            res.send(doc);
+            res.send({todo});
         })
         .catch((e) => {
             if (!ObjectID.isValid(todoId)) {
@@ -56,11 +56,11 @@ app.delete('/todos/:id', (req, res) => {
     }
 
     Todo.findByIdAndRemove(todoId)
-        .then((doc) => {
-            if (!doc) {
+        .then((todo) => {
+            if (!todo) {
                 return res.status(404).send('Todo not found.');
             }
-            res.send(doc);
+            res.send({todo});
         })
         .catch((err) => {
             res.status(404).send(err);
