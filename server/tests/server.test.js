@@ -259,4 +259,54 @@ describe('Server', () => {
 
         });
     });
+
+    describe('POST /users/login', () => {
+        it('should login user and return token', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: users[1].email,
+                    password: users[1].password
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.headers['x-auth']).toBeTruthy();
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User.findById(users[1]._id).then((user) => {
+                            expect(user.tokens[0]).toMatchObject({
+                                access: 'auth',
+                                token: res.headers['x-auth']
+                            });
+                            done();
+                        }).catch( err => done(err));
+                });
+        });
+
+        it('should return 400 for non-existent email', (done) => {
+            request(app)
+            .post('/users/login')
+            .send({
+                email: 'test@test.com',
+                password: '123456'
+            })
+            .expect(400)
+            .end(done);
+        });
+
+        it('should return 400 for wrong password', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: users[0].email,
+                    password: users[0].password + '123'
+                })
+                .expect(400)
+                .end(done);
+        });
+    });
 });
