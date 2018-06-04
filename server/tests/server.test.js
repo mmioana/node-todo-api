@@ -220,7 +220,6 @@ describe('Server', () => {
                 .send({email, password})
                 .expect(200)
                 .expect((res) => {
-                    console.log(res.body);
                     expect(res.header['x-auth']).toBeTruthy();
                     expect(res.body._id).toBeTruthy();
                     expect(res.body.email).toBe(email);
@@ -307,6 +306,25 @@ describe('Server', () => {
                 })
                 .expect(400)
                 .end(done);
+        });
+    });
+
+    describe('DELETE /users/me/token', () => {
+        it('should remove auth token on logout', (done) => {
+            let token = users[0].tokens[0].token;
+            request(app).delete('/users/me/token')
+                .set('x-auth', token)
+                .expect(200)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User.findById({_id: users[0]._id}).then((user) => {
+                        expect(user.tokens.length).toBe(0);
+                        done();
+                    }).catch(err => done(err));
+                });
         });
     });
 });
